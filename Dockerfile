@@ -2,7 +2,7 @@ FROM ubuntu:19.04
 
 EXPOSE 8080
 
-ENTRYPOINT ["dumb-init", "code-server" , "workspace"]
+ENTRYPOINT ["dumb-init", "startup.sh"]
 
 RUN apt-get update && apt-get install -y \
 	openssl \
@@ -29,11 +29,8 @@ ENV CODE_SERVER_VERSION=2.1692-vsc1.39.2
 
 COPY fix-permissions.sh /usr/local/bin/
 
-## User account
-RUN adduser --disabled-password --gecos '' coder
-
-WORKDIR /home/coder
-ENV HOME /home/coder
+WORKDIR /home/coder-install
+ENV HOME /home/coder-install
 
 RUN mkdir /tmp/code-server && \
     curl -L https://github.com/cdr/code-server/releases/download/${CODE_SERVER_VERSION}/code-server${CODE_SERVER_VERSION}-linux-x86_64.tar.gz -o /tmp/code-server/code-server.tar.gz && \
@@ -68,7 +65,6 @@ RUN curl -sL -o /usr/local/bin/gimme https://raw.githubusercontent.com/travis-ci
     upx /usr/local/bin/gimme && \
     fix-permissions.sh /usr/local/bin/gimme
 
-
 RUN chmod g+rw /home && \
     mkdir -p ${HOME}/workspace && \
     mkdir -p ${HOME}/.cache/helm && \
@@ -78,7 +74,6 @@ RUN chmod g+rw /home && \
     mkdir -p ${HOME}/.local/share/code-server/extensions/  && \
     mkdir -p ${HOME}/.local/share/code-server/logs/  && \
     mkdir -p ${HOME}/.local/share/code-server/machineid/  && \
-    chown -R coder ${HOME} && \
     fix-permissions.sh ${HOME}/
 
 # helm plugins
@@ -93,7 +88,7 @@ RUN gimme stable && \
     fix-permissions.sh ${HOME}/.gimme
 
 # settings
-COPY --chown=coder:0 settings.json ${HOME}/.local/share/code-server/User/
+COPY settings.json ${HOME}/.local/share/code-server/User/
 
 # extensions
 RUN EXTENSIONS="ms-vscode.Go \
@@ -114,6 +109,12 @@ ENV PASSWORD=${PASSWORD:-DEFAULT_PASSWORD}
 RUN echo "source <(oc completion bash)" >> ${HOME}/.bashrc && \
     echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "' >> ${HOME}/.bashrc && \
     echo '. ~/.gimme/envs/latest.env 2>&1' >> ${HOME}/.bashrc && \
-    fix-permissions.sh ${HOME}/.bashrc
+    fix-permissions.sh ${HOME}/.bashrc && \
+    mkdir -p /home/coder && \
+    fix-permissions.sh /home/coder
+COPY startup.sh /usr/local/bin/
 
-USER coder
+WORKDIR /home/coder
+ENV HOME /home/coder
+
+USER 1001
