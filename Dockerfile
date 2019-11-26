@@ -97,8 +97,8 @@ COPY --chown=coder:0 settings.json /home/coder/.local/share/code-server/User/
 
 USER root
 
-RUN find /home/coder -follow -exec chgrp 0 {} \;
-    find /home/coder -follow -exec chmod g+rw {} \;
+RUN find /home/coder -follow -exec chgrp 0 {} \; && \
+    find /home/coder -follow -exec chmod g+rw {} \; && \
     find /home/coder -follow -type d -exec chmod g+x {} +
 
 USER coder
