@@ -1,8 +1,5 @@
 FROM ubuntu:19.04
 
-WORKDIR /home/coder
-ENV HOME /home/coder
-
 EXPOSE 8080
 
 ENTRYPOINT ["dumb-init", "code-server" , "workspace"]
@@ -20,7 +17,8 @@ RUN apt-get update && apt-get install -y \
     bash-completion \
     fzf \
     jq \
-    upx
+    upx && \
+    apt-get clean all
 
 RUN locale-gen en_US.UTF-8
 # We unfortunately cannot use update-locale because docker will not use the env variables
@@ -30,6 +28,12 @@ ENV LC_ALL=en_US.UTF-8
 ENV CODE_SERVER_VERSION=2.1692-vsc1.39.2
 
 COPY fix-permissions.sh /usr/local/bin/
+
+## User account
+RUN adduser --disabled-password --gecos '' coder
+
+WORKDIR /home/coder
+ENV HOME /home/coder
 
 RUN mkdir /tmp/code-server && \
     curl -L https://github.com/cdr/code-server/releases/download/${CODE_SERVER_VERSION}/code-server${CODE_SERVER_VERSION}-linux-x86_64.tar.gz -o /tmp/code-server/code-server.tar.gz && \
@@ -64,10 +68,6 @@ RUN curl -sL -o /usr/local/bin/gimme https://raw.githubusercontent.com/travis-ci
     upx /usr/local/bin/gimme && \
     fix-permissions.sh /usr/local/bin/gimme
 
-## User account
-RUN adduser --disabled-password --gecos '' coder && \
-    adduser coder sudo && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers;
 
 RUN chmod g+rw /home && \
     mkdir -p ${HOME}/workspace && \
@@ -80,8 +80,6 @@ RUN chmod g+rw /home && \
     mkdir -p ${HOME}/.local/share/code-server/machineid/  && \
     chown -R coder ${HOME} && \
     fix-permissions.sh ${HOME}/
-
-USER coder
 
 # helm plugins
 RUN helm plugin install https://github.com/helm/helm-2to3 && \
@@ -117,3 +115,5 @@ RUN echo "source <(oc completion bash)" >> ${HOME}/.bashrc && \
     echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "' >> ${HOME}/.bashrc && \
     echo '. ~/.gimme/envs/latest.env 2>&1' >> ${HOME}/.bashrc && \
     fix-permissions.sh ${HOME}/.bashrc
+
+USER coder
