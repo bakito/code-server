@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y \
     bash-completion \
     fzf \
     jq \
-    upx && \
+    upx \
+    nano && \
     apt-get clean all
 
 RUN locale-gen en_US.UTF-8
