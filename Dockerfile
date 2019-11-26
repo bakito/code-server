@@ -70,6 +70,7 @@ RUN chmod g+rw /home && \
     chown -R coder:coder /home/coder && \
     chown -R coder:coder /home/coder/workspace;
 
+
 USER coder
 
 # helm plugins
@@ -92,7 +93,15 @@ RUN EXTENSIONS="ms-vscode.Go \
     for ex in ${EXTENSIONS}; do code-server --install-extension ${ex} --force; done
 
 # settings
-COPY --chown=coder:coder settings.json /home/coder/.local/share/code-server/User/
+COPY --chown=coder:0 settings.json /home/coder/.local/share/code-server/User/
+
+USER root
+
+RUN find /home/coder -follow -exec chgrp 0 {} \;
+    find /home/coder -follow -exec chmod g+rw {} \;
+    find /home/coder -follow -type d -exec chmod g+x {} +
+
+USER coder
 
 ENV DEFAULT_PASSWORD="P@ssw0rd"
 ENV PASSWORD=${PASSWORD:-DEFAULT_PASSWORD}
