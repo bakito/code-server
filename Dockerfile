@@ -13,7 +13,8 @@ RUN yum install -y  --setopt=tsflags=nodocs \
         curl \
         wget \
         gcc \
-        xz && \
+        xz \
+        procps-ng && \
     yum clean all
 
 COPY bin/fix-permissions.sh /usr/local/bin/

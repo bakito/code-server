@@ -33,18 +33,10 @@ fi
 
 echo "Domain      ${CNTLM_DOMAIN}" >> ${CONF_FILE}
 
-if [ -z "${CNTLM_PASSWORD}" ]; then
-  echo "ERROR: please provide the CNTLM_PASSWORD"
-  exit 1
-else
-  echo "Auth            NTLMv2" >> ${CONF_FILE}
-  echo "PassNTLMv2      $(echo ${CNTLM_PASSWORD} | cntlm -H -d ${CNTLM_DOMAIN} -u ${CNTLM_USERNAME} | grep PassNTLMv2 |awk -F ' ' '{print $2}')" >> ${CONF_FILE}
-fi
-
 if [ "${CNTLM_VERBOSE}" == "true" ]; then
   RUN_VERBOSE=-v
 else
   RUN_VERBOSE=
 fi
 
-cntlm ${RUN_VERBOSE}
+cntlm ${RUN_VERBOSE} -I
