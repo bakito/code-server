@@ -14,11 +14,12 @@ RUN apt-get update && apt-get install -y \
 	vim \
 	curl \
 	wget \
-    bash-completion \
-    fzf \
-    jq \
-    upx \
-    nano && \
+        bash-completion \
+        fzf \
+        jq \
+        upx \
+        nano \
+	build-essential && \
     apt-get clean all
 
 RUN locale-gen en_US.UTF-8
