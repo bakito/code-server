@@ -16,7 +16,7 @@ RUN yum install -y  --setopt=tsflags=nodocs \
         xz && \
     yum clean all
 
-COPY fix-permissions.sh /usr/local/bin/
+COPY bin/fix-permissions.sh /usr/local/bin/
 
 WORKDIR /home/coder-install
 ENV HOME /home/coder-install
@@ -100,6 +100,14 @@ RUN helm plugin install https://github.com/helm/helm-2to3 && \
 RUN gimme stable && \
     fix-permissions.sh ${HOME}/.gimme
 
+# cntlm
+RUN curl -L  https://sourceforge.net/projects/cntlm/files/cntlm/cntlm%200.92.3/cntlm-0.92.3-1.x86_64.rpm/download -o /tmp/cntlm.rpm && \
+    rpm -ihv /tmp/cntlm.rpm && \
+    rm -Rf /tmp/cntlm.rpm && \
+    fix-permissions.sh /etc/cntlm.conf
+
+COPY bin/run-cntlm.sh /usr/local/bin/
+
 # settings
 COPY settings.json ${HOME}/.local/share/code-server/User/
 
@@ -125,7 +133,8 @@ RUN echo "source <(oc completion bash)" >> ${HOME}/.bashrc && \
     fix-permissions.sh ${HOME}/.bashrc && \
     mkdir -p /home/coder && \
     fix-permissions.sh /home/coder
-COPY startup.sh /usr/local/bin/
+    
+COPY bin/startup.sh /usr/local/bin/
 
 WORKDIR /home/coder
 ENV HOME /home/coder
