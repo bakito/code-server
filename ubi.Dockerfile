@@ -1,29 +1,21 @@
-FROM ubuntu:19.04
+FROM ubi8/ubi
 
 EXPOSE 8080
 
 ENTRYPOINT ["dumb-init", "startup.sh"]
 
-RUN apt-get update && apt-get install -y \
-	openssl \
-	net-tools \
-	git \
-	locales \
-	dumb-init \
-	vim \
-	curl \
-	wget \
-    bash-completion \
-    fzf \
-    jq \
-    upx \
-    nano \
-	build-essential && \
-    apt-get clean all
+RUN yum install -y  --setopt=tsflags=nodocs \
+		openssl \
+        net-tools \
+        git \
+        vim \
+        nano \
+        curl \
+        wget \
+        gcc \
+        xz && \
+    yum clean all
 
-RUN locale-gen en_US.UTF-8
-# We unfortunately cannot use update-locale because docker will not use the env variables
-# configured in /etc/default/locale so we need to set it manually.
 ENV LC_ALL=en_US.UTF-8
 
 COPY fix-permissions.sh /usr/local/bin/
@@ -41,6 +33,15 @@ RUN mkdir /tmp/code-server && \
     rm -rf /tmp/code-server && \
     fix-permissions.sh /usr/local/bin/code-server
 
+# upx
+RUN mkdir /tmp/upx && \
+    curl -L https://github.com/upx/upx/releases/download/v3.95/upx-3.95-amd64_linux.tar.xz -o /tmp/upx/upx.tar.xz && \
+    tar xJf /tmp/upx/upx.tar.xz -C /tmp/upx/ --strip-components 1 && \
+    chmod +x /tmp/upx/upx && \
+    mv /tmp/upx/upx /usr/local/bin/upx && \
+    rm -rf /tmp/upx && \
+    fix-permissions.sh /usr/local/bin/upx
+
 # oc
 RUN mkdir /tmp/oc && \
     curl -L https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz -o /tmp/oc/oc.tar.gz && \
@@ -50,6 +51,13 @@ RUN mkdir /tmp/oc && \
     mv /tmp/oc/oc /usr/local/bin/oc && \
     rm -rf /tmp/oc && \
     fix-permissions.sh /usr/local/bin/oc
+
+
+# jq
+RUN curl -L https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o /usr/local/bin/jq && \
+    chmod +x /usr/local/bin/jq && \
+    upx /usr/local/bin/jq && \
+    fix-permissions.sh /usr/local/bin/jq
 
 # yq
 RUN curl -L https://github.com/mikefarah/yq/releases/download/2.4.1/yq_linux_amd64 -o /usr/local/bin/yq && \
