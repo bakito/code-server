@@ -14,7 +14,8 @@ RUN yum install -y  --setopt=tsflags=nodocs \
         wget \
         gcc \
         xz \
-        procps-ng && \
+        procps-ng \
+        nodejs && \
     yum clean all
 
 COPY bin/fix-permissions.sh /usr/local/bin/
@@ -122,6 +123,7 @@ RUN EXTENSIONS="ms-vscode.Go \
                 yzhang.markdown-all-in-one \
                 vscode-icons-team.vscode-icons" && \
     for ex in ${EXTENSIONS}; do code-server --install-extension ${ex} --force; done && \
+    cd ${HOME}/.local/share/code-server/extensions/ms-vscode.go-* && npm install && \
     fix-permissions.sh ${HOME}/.local/share/code-server/
 
 
