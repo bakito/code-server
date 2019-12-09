@@ -123,12 +123,9 @@ RUN EXTENSIONS="ms-vscode.Go \
                 yzhang.markdown-all-in-one \
                 vscode-icons-team.vscode-icons" && \
     for ex in ${EXTENSIONS}; do code-server --install-extension ${ex} --force; done && \
-    cd ${HOME}/.local/share/code-server/extensions/ms-vscode.go-* && npm install && \
+   # cd ${HOME}/.local/share/code-server/extensions/ms-vscode.go-* && npm install && \
     fix-permissions.sh ${HOME}/.local/share/code-server/
 
-
-ENV DEFAULT_PASSWORD="P@ssw0rd"
-ENV PASSWORD=${PASSWORD:-DEFAULT_PASSWORD}
 
 COPY .bashrc ${HOME}/.bashrc
 
