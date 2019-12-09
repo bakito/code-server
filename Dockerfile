@@ -135,7 +135,8 @@ RUN echo "source <(oc completion bash)" >> ${HOME}/.bashrc && \
     echo '. ~/.gimme/envs/latest.env 2>&1' >> ${HOME}/.bashrc && \
     fix-permissions.sh ${HOME}/.bashrc && \
     mkdir -p /home/coder && \
-    fix-permissions.sh /home/coder
+    fix-permissions.sh /home/coder && \
+    g+rw /etc/passwd
     
 COPY bin/startup.sh /usr/local/bin/
 
