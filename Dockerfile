@@ -136,7 +136,7 @@ RUN echo "source <(oc completion bash)" >> ${HOME}/.bashrc && \
     fix-permissions.sh ${HOME}/.bashrc && \
     mkdir -p /home/coder && \
     fix-permissions.sh /home/coder && \
-    g+rw /etc/passwd
+    chmod g+rw /etc/passwd
     
 COPY bin/startup.sh /usr/local/bin/
 
