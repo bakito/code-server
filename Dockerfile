@@ -130,10 +130,9 @@ RUN EXTENSIONS="ms-vscode.Go \
 ENV DEFAULT_PASSWORD="P@ssw0rd"
 ENV PASSWORD=${PASSWORD:-DEFAULT_PASSWORD}
 
-RUN echo "source <(oc completion bash)" >> ${HOME}/.bashrc && \
-    echo 'export PS1="\[\e]0;\u@\h: \w\a\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "' >> ${HOME}/.bashrc && \
-    echo '. ~/.gimme/envs/latest.env 2>&1' >> ${HOME}/.bashrc && \
-    fix-permissions.sh ${HOME}/.bashrc && \
+COPY .bashrc ${HOME}/.bashrc
+
+RUN fix-permissions.sh ${HOME}/.bashrc && \
     mkdir -p /home/coder && \
     fix-permissions.sh /home/coder && \
     chmod g+rw /etc/passwd
