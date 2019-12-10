@@ -23,4 +23,6 @@ if [[ -d /home/coder-install/extensions ]]; then
   done
 fi
 
+. ~/.gimme/envs/latest.env 2>&1
+
 code-server ${HOME}/workspace
