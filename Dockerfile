@@ -9,7 +9,7 @@ RUN apt-get update \
     && echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list \
     && apt-get update \
     && apt-get install helm \
-    && apt-get upgrade \
+    && apt-get upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY bin/fix-permissions.sh /home/coder/bin/
