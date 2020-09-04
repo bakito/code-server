@@ -1,5 +1,5 @@
 FROM codercom/code-server
-
+ENV HOME=/home/coder
 USER root
 
 RUN apt-get update \
