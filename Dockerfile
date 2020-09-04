@@ -3,7 +3,7 @@ FROM codercom/code-server
 USER root
 
 RUN apt-get update \
-    && apt-get install -y make wget apt-transport-https gnupg \
+    && apt-get install -y make build-essential wget apt-transport-https gnupg \
     && curl https://baltocdn.com/helm/signing.asc | sudo apt-key add - \
     && apt-get update \
     && echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list \
